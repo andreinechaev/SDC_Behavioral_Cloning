@@ -3,6 +3,8 @@ import cv2
 import numpy as np
 
 DATA_PATH = './data/'
+EPOCHS = 5
+BATCH_SIZE = 64
 
 samples = []
 with open(DATA_PATH + 'driving_log.csv', 'r') as csv_file:
@@ -40,8 +42,8 @@ def generator(samples, batch_size=32):
             yield shuffle(X_train, y_train)
 
 # compile and train the model using the generator function
-train_generator = generator(train_samples, batch_size=32)
-validation_generator = generator(validation_samples, batch_size=32)
+train_generator = generator(train_samples, batch_size=BATCH_SIZE)
+validation_generator = generator(validation_samples, batch_size=BATCH_SIZE)
 
 row, col, ch = 160, 320, 3  # image format
 print('data loaded')
@@ -69,10 +71,10 @@ model.add(Dense(1))
 model.compile(loss='mse', optimizer='adam')
 
 history_object = model.fit_generator(train_generator,
- steps_per_epoch=len(train_samples)/32,
+ steps_per_epoch=len(train_samples)/BATCH_SIZE,
   validation_data=validation_generator,
-  validation_steps=len(validation_samples),
-  epochs=4)
+  validation_steps=len(validation_samples)/BATCH_SIZE,
+  epochs=EPOCHS)
 
 print(history_object.history.keys())
 
@@ -86,4 +88,4 @@ plt.title('model mean squared error loss')
 plt.ylabel('mean squared error loss')
 plt.xlabel('epoch')
 plt.legend(['training set', 'validation set'], loc='upper right')
-plt.show()
+plt.savefig('loss_epoch.png')

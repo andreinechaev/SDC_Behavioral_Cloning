@@ -12,12 +12,12 @@ The goals / steps of this project are the following:
 * Summarize the results with a written report
 
 ## Rubric Points
-###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
+### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
 ---
-###Files Submitted & Code Quality
+### Files Submitted & Code Quality
 
-####1. Submission includes all required files and can be used to run the simulator in autonomous mode
+#### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
 My project includes the following files:
 * model.py containing the script to create and train the model
@@ -25,19 +25,19 @@ My project includes the following files:
 * model.h5 containing a trained convolution neural network
 * writeup_report.md or writeup_report.pdf summarizing the results
 
-####2. Submission includes functional code
+#### 2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing
 ```sh
 python drive.py model.h5
 ```
 
-####3. Submission code is usable and readable
+#### 3. Submission code is usable and readable
 
 The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
 
-###Model Architecture and Training Strategy
+### Model Architecture and Training Strategy
 
-####1. An appropriate model architecture has been employed
+#### 1. An appropriate model architecture has been employed
 
 (model.py 53 - 67)
 I used NVidia regression network, that is used in their self-driving system. I achieved the best result with least epochs using the exact approach. LeNet required twice more iterations and couldn't achieve anything close.
@@ -53,30 +53,45 @@ The network contains 10 main layers + 2 preparation layers.
     - Than 1 layer that will make our data 1 dimensional
     - and finishing NN with 4 fully connected layers. Decreasing output up to 1, to improve prediction.
 
-####2. Attempts to reduce overfitting in the model
+#### 2. Attempts to reduce overfitting in the model
 
 The model was split up on batches where each batch was shuffled before usage. That randomized validation set better.
 The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
-####3. Model parameter tuning
+#### 3. Model parameter tuning
 
 The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 69).
 
-####4. Appropriate training data
+#### 4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used data from 2 laps driving clockwise, 1 lap counterclockwise + all image and steering wheel data were flipped to increase stability.   
+Training data was chosen to keep the vehicle driving on the road. I used data from 2 laps driving clockwise, 1 lap counterclockwise + all image and steering wheel data were flipped to increase stability.
 
-###Model Architecture and Training Strategy
+Each frame was cropped, to exclude useless data. Only road remained on each frame.
+**Original**:
+![image](./examples/original.jpg)
+**Croppedd**:
+![image](./examples/cropped.png)
 
-####1. Solution Design Approach
+### Model Architecture and Training Strategy
+
+#### 1. Solution Design Approach
 
 I tried a few approaches. The first one was LeNet implementation that could drive through half of the track without any help. I could try to gather more data but I decided to try other networks.
 
 I tried my own solution, adding more adding 2 more convolutional layers to LeNet and a few more improvisations. There weren't any advantage over LeNet, plus it took longer to learn. Since, I'm using CPU, I moved forward to NVidia solution.
 It takes relatively short time (15-25 minutes) to learn and with such small data set it shows very nice result, that you can see in the video.  
 
+I achieved loss in 1.1% with just 5 epochs. Increasing epochs won't be useful in this case, after 8 epochs loss remains the same - about 1.0%.
 
-####2. Creation of the Training Set & Training Process
+![image](./examples/loss_epoch.png)
+
+
+#### 2. Creation of the Training Set & Training Process
 
 This is discussed above. As an addition I had trouble with curves where you can see ground. So, I added data driving slowly (about 2-3mph) in that place.
 ![image](./examples/hell_curve.jpg)
+
+#### 3. Conclusion
+
+**Behavioral cloning** is a great techniqiue but requires a significant amount of learning data. The technique can be used in a closed environment. Althought, open world will be a challenge. 
+Current implementation can be improved by generalizing data, by using 1 color channel, that will reduce learning curve and improve the network overall. 
